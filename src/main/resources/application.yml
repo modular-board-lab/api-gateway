@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   application:
@@ -7,20 +7,46 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: board-service-boards
-          uri: ${services.board-service.url:http://localhost:8080}
+        - id: auth-service
+          uri: ${services.auth-service.url:http://localhost:8082}
           predicates:
-            - Method=GET
+            - Path=/auth,/auth/**
+        - id: board-service-boards
+          uri: ${services.board-service.url:http://localhost:8081}
+          predicates:
             - Path=/boards,/boards/**
         - id: board-service-posts
-          uri: ${services.board-service.url:http://localhost:8080}
+          uri: ${services.board-service.url:http://localhost:8081}
           predicates:
-            - Method=GET
             - Path=/posts,/posts/**
 
 services:
+  auth-service:
+    url: http://localhost:8082
   board-service:
-    url: http://localhost:8080
+    url: http://localhost:8081
+
+auth:
+  jwt:
+    issuer: auth-service
+    secret: ${JWT_SECRET:local-dev-secret-local-dev-secret-local-dev-secret}
+
+security:
+  public-paths:
+    - method: POST
+      path: /auth/signup
+    - method: POST
+      path: /auth/login
+    - method: POST
+      path: /auth/reissue
+    - method: GET
+      path: /actuator/health
+    - method: GET
+      path: /boards/**
+    - method: GET
+      path: /posts/**
+    - method: GET
+      path: /posts/*/comments
 
 management:
   endpoints:
