@@ -19,12 +19,24 @@ spring:
           uri: ${services.board-service.url:http://localhost:8081}
           predicates:
             - Path=/posts,/posts/**
+        - id: board-query-service-posts
+          uri: ${services.board-query-service.url:http://localhost:8084}
+          predicates:
+            - Path=/bff/posts,/bff/posts/**
+        - id: file-service
+          uri: ${services.file-service.url:http://localhost:8083}
+          predicates:
+            - Path=/files,/files/**
 
 services:
   auth-service:
     url: http://localhost:8082
   board-service:
     url: http://localhost:8081
+  board-query-service:
+    url: http://localhost:8084
+  file-service:
+    url: http://localhost:8083
 
 auth:
   jwt:
@@ -45,6 +57,10 @@ security:
       path: /boards/**
     - method: GET
       path: /posts/**
+    - method: GET
+      path: /bff/posts/**
+    - method: GET
+      path: /files/**
     - method: GET
       path: /posts/*/comments
 
